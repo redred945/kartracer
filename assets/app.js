@@ -57,6 +57,13 @@
     var setActiveDot = function (idx) {
       dots.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
     };
+    // one slide's true footprint (card + the gap after it) — NOT grid.clientWidth, which also
+    // counts the grid's own side padding and would drift out of sync by a few cards in
+    var getStep = function () {
+      var first = grid.children[0];
+      if (!first) return grid.clientWidth;
+      return first.getBoundingClientRect().width + parseFloat(getComputedStyle(grid).columnGap || 0);
+    };
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var isMobile = function () { return window.matchMedia('(max-width: 560px)').matches; };
     var timer = null;
@@ -65,11 +72,11 @@
       if (!opts.auto || timer || reduced || !isMobile()) return;
       timer = setInterval(function () {
         var items = grid.children;
-        var w = grid.clientWidth;
-        if (!items.length || !w) return;
-        var idx = Math.round(grid.scrollLeft / w);
+        var step = getStep();
+        if (!items.length || !step) return;
+        var idx = Math.round(grid.scrollLeft / step);
         var nextIdx = (idx + 1) % items.length;
-        grid.scrollTo({ left: nextIdx * w, behavior: 'smooth' });
+        grid.scrollTo({ left: nextIdx * step, behavior: 'smooth' });
       }, opts.interval || 2800);
     };
     startAuto();
@@ -84,8 +91,8 @@
     grid.addEventListener('scroll', function () {
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(function () {
-        var w = grid.clientWidth;
-        if (w && dots.length) setActiveDot(Math.round(grid.scrollLeft / w));
+        var step = getStep();
+        if (step && dots.length) setActiveDot(Math.round(grid.scrollLeft / step));
       }, 80);
     }, { passive: true });
     window.addEventListener('resize', function () { stopAuto(); startAuto(); });
