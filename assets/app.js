@@ -30,15 +30,18 @@
     fabIo.observe(footerEl);
   }
 
-  // hero reel — autoplay the small muted preview of the client's own Facebook reel, unless the
-  // visitor prefers reduced motion (the card stays a normal link to the full video either way)
-  var heroReelVideo = document.querySelector('.hero__reel-video');
-  if (heroReelVideo) {
+  // reel band — autoplay the client's own muted footage, unless the visitor prefers reduced motion.
+  // Retries on 'canplay' too: calling play() before any data has buffered can otherwise get silently
+  // rejected on a cold load, leaving the clip stuck at frame 0 with no second attempt.
+  var reelVideo = document.querySelector('.reel-band__video video');
+  if (reelVideo) {
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      heroReelVideo.removeAttribute('loop');
-      heroReelVideo.pause();
+      reelVideo.removeAttribute('loop');
+      reelVideo.pause();
     } else {
-      heroReelVideo.play().catch(function () {});
+      var tryPlayReel = function () { reelVideo.play().catch(function () {}); };
+      tryPlayReel();
+      reelVideo.addEventListener('canplay', tryPlayReel);
     }
   }
 
