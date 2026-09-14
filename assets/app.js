@@ -41,9 +41,14 @@
       reelVideo.removeAttribute('loop');
       reelVideo.pause();
     } else {
+      // belt-and-suspenders for iOS Safari: the muted *property* has been known to not always
+      // pick up the muted *attribute* reliably, and an unmuted autoplay attempt is silently refused
+      reelVideo.muted = true;
+      reelVideo.defaultMuted = true;
       var tryPlayReel = function () { reelVideo.play().catch(function () {}); };
       tryPlayReel();
       reelVideo.addEventListener('canplay', tryPlayReel);
+      reelVideo.addEventListener('loadedmetadata', tryPlayReel);
     }
   });
 
