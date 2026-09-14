@@ -40,6 +40,10 @@ Ajouté à `C:\Users\Reda\Code\.claude\launch.json` sous le nom `kartracer-stati
 - [ ] **Photos hautes résolution** — les photos ont été récupérées depuis le site actuel puis
       recompressées (JPEG, largeur max 1600 px) pour rester légères. Si le client a des photos sources
       en meilleure qualité (piste, karts, club house), les substituer dans `assets/img/`.
+- [ ] **Vidéo du hero** — `assets/video/hero-reel.mp4` (972 Ko, 360×640, ~17s) est une copie du reel
+      Facebook officiel du client (https://www.facebook.com/reel/1767576667619584, page "Kart Racer
+      Saran"), récupérée en 360p progressif (résolution native de la source, pas d'upscale). Si le
+      client a le fichier source en meilleure qualité, le substituer directement.
 
 ## Structure
 

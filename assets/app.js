@@ -30,6 +30,18 @@
     fabIo.observe(footerEl);
   }
 
+  // hero reel — autoplay the small muted preview of the client's own Facebook reel, unless the
+  // visitor prefers reduced motion (the card stays a normal link to the full video either way)
+  var heroReelVideo = document.querySelector('.hero__reel-video');
+  if (heroReelVideo) {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      heroReelVideo.removeAttribute('loop');
+      heroReelVideo.pause();
+    } else {
+      heroReelVideo.play().catch(function () {});
+    }
+  }
+
   // generic mobile slider: horizontal scroll-snap track with optional dot indicators and optional
   // auto-advance. Originally built just for .stats__grid; reused (without auto-advance) for any
   // section whose card grid collapses to a long single-column stack on phones (bento, why-grid,
