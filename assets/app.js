@@ -30,47 +30,64 @@
     fabIo.observe(footerEl);
   }
 
-  // stats strip on mobile: auto-advances on its own, pauses briefly if the visitor swipes it
-  var statsGrid = document.querySelector('.stats__grid');
-  if (statsGrid) {
-    var statsDots = Array.prototype.slice.call(document.querySelectorAll('.stats__dots span'));
+  // generic mobile slider: horizontal scroll-snap track with optional dot indicators and optional
+  // auto-advance. Originally built just for .stats__grid; reused (without auto-advance) for any
+  // section whose card grid collapses to a long single-column stack on phones (bento, why-grid,
+  // formules, packs) — same swipe/scroll-snap mechanism, dots stay in sync with the active slide.
+  var setupSlider = function (grid, opts) {
+    if (!grid) return;
+    opts = opts || {};
+    var dotsWrap = opts.dotsSelector && grid.parentElement ? grid.parentElement.querySelector(opts.dotsSelector) : null;
+    var dots = dotsWrap ? Array.prototype.slice.call(dotsWrap.querySelectorAll('span')) : [];
     var setActiveDot = function (idx) {
-      statsDots.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
     };
-    var statsReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var statsIsMobile = function () { return window.matchMedia('(max-width: 560px)').matches; };
-    var statsTimer = null;
-    var stopStatsAuto = function () { if (statsTimer) { clearInterval(statsTimer); statsTimer = null; } };
-    var startStatsAuto = function () {
-      if (statsTimer || statsReduced || !statsIsMobile()) return;
-      statsTimer = setInterval(function () {
-        var tiles = statsGrid.querySelectorAll('.stat');
-        var w = statsGrid.clientWidth;
-        if (!tiles.length || !w) return;
-        var idx = Math.round(statsGrid.scrollLeft / w);
-        var nextIdx = (idx + 1) % tiles.length;
-        statsGrid.scrollTo({ left: nextIdx * w, behavior: 'smooth' });
-      }, 2800);
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var isMobile = function () { return window.matchMedia('(max-width: 560px)').matches; };
+    var timer = null;
+    var stopAuto = function () { if (timer) { clearInterval(timer); timer = null; } };
+    var startAuto = function () {
+      if (!opts.auto || timer || reduced || !isMobile()) return;
+      timer = setInterval(function () {
+        var items = grid.children;
+        var w = grid.clientWidth;
+        if (!items.length || !w) return;
+        var idx = Math.round(grid.scrollLeft / w);
+        var nextIdx = (idx + 1) % items.length;
+        grid.scrollTo({ left: nextIdx * w, behavior: 'smooth' });
+      }, opts.interval || 2800);
     };
-    startStatsAuto();
-    var statsResumeTimeout;
-    var pauseStatsAuto = function () {
-      stopStatsAuto();
-      clearTimeout(statsResumeTimeout);
-      statsResumeTimeout = setTimeout(startStatsAuto, 4000);
+    startAuto();
+    var resumeTimeout;
+    var pauseAuto = function () {
+      stopAuto();
+      if (opts.auto) { clearTimeout(resumeTimeout); resumeTimeout = setTimeout(startAuto, 4000); }
     };
-    statsGrid.addEventListener('pointerdown', pauseStatsAuto);
-    statsGrid.addEventListener('touchstart', pauseStatsAuto, { passive: true });
-    var statsScrollTimeout;
-    statsGrid.addEventListener('scroll', function () {
-      clearTimeout(statsScrollTimeout);
-      statsScrollTimeout = setTimeout(function () {
-        var w = statsGrid.clientWidth;
-        if (w) setActiveDot(Math.round(statsGrid.scrollLeft / w));
+    grid.addEventListener('pointerdown', pauseAuto);
+    grid.addEventListener('touchstart', pauseAuto, { passive: true });
+    var scrollTimeout;
+    grid.addEventListener('scroll', function () {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(function () {
+        var w = grid.clientWidth;
+        if (w && dots.length) setActiveDot(Math.round(grid.scrollLeft / w));
       }, 80);
     }, { passive: true });
-    window.addEventListener('resize', function () { stopStatsAuto(); startStatsAuto(); });
-  }
+    window.addEventListener('resize', function () { stopAuto(); startAuto(); });
+  };
+
+  // stats strip: glanceable numbers, auto-advances on its own, pauses briefly if the visitor swipes it
+  setupSlider(document.querySelector('.stats__grid'), { dotsSelector: '.stats__dots', auto: true });
+  // bento, why-grid, formules (heavy usages only) and packs: real content to read/compare,
+  // so these swipe on demand but never auto-advance
+  setupSlider(document.querySelector('.bento'), { dotsSelector: '.bento__dots' });
+  Array.prototype.slice.call(document.querySelectorAll('.why-grid')).forEach(function (el) {
+    setupSlider(el, { dotsSelector: '.why-grid__dots' });
+  });
+  Array.prototype.slice.call(document.querySelectorAll('.formules--slide')).forEach(function (el) {
+    setupSlider(el, { dotsSelector: '.formules__dots' });
+  });
+  setupSlider(document.querySelector('.packs'), { dotsSelector: '.packs__dots' });
 
   // scrollspy — lights up the header nav link for the section currently in view.
   // Only meaningful on the homepage, where a few nav links point to in-page anchors;

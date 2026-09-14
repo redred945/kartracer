@@ -310,10 +310,20 @@ section { padding-block: clamp(3.4rem, 8vw, 6.4rem); }
   .bento { grid-template-columns: repeat(2, 1fr); grid-auto-rows: clamp(160px, 40vw, 220px); }
   .b-lg { grid-column: span 2; grid-row: span 1; }
 }
+/* on phones a 1-col stack of 9 cards is a very long scroll — swipe through them one at a time instead
+   (same scroll-snap slider mechanism as .stats__grid; no auto-advance, each card has real text to read) */
+.bento__dots { display: none; justify-content: center; gap: 0.4rem; margin-top: 1rem; }
+.bento__dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--line-strong); }
+.bento__dots span.is-active { background: var(--red-2); box-shadow: 0 0 8px rgba(225,6,0,0.8); }
 @media (max-width: 560px) {
-  .bento { grid-template-columns: 1fr; }
-  .bento__card, .b-lg, .b-wide { grid-column: span 1 !important; grid-row: span 1 !important; }
-  .bento__card { min-height: 230px; }
+  .bento {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 0;
+    margin-inline: calc(var(--pad) * -1); padding-inline: var(--pad); scrollbar-width: none;
+  }
+  .bento::-webkit-scrollbar { display: none; }
+  .bento__card, .b-lg, .b-wide { grid-column: span 1 !important; grid-row: span 1 !important; flex: 0 0 100%; scroll-snap-align: center; }
+  .bento__card { min-height: 210px; }
+  .bento__dots { display: flex; }
 }
 
 /* ================= why grid ================= */
@@ -332,7 +342,19 @@ section { padding-block: clamp(3.4rem, 8vw, 6.4rem); }
 .why p { color: var(--ink-mid); font-size: 0.92rem; line-height: 1.55; }
 .why-grid--3 { grid-template-columns: repeat(3, 1fr); }
 @media (max-width: 900px) { .why-grid, .why-grid--3 { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .why-grid, .why-grid--3 { grid-template-columns: 1fr; } }
+/* same swipe-slider treatment as .bento — 3-4 stacked cards is a long scroll on a phone */
+.why-grid__dots { display: none; justify-content: center; gap: 0.4rem; margin-top: 1rem; }
+.why-grid__dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--line-strong); }
+.why-grid__dots span.is-active { background: var(--red-2); box-shadow: 0 0 8px rgba(225,6,0,0.8); }
+@media (max-width: 560px) {
+  .why-grid, .why-grid--3 {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 0;
+    margin-inline: calc(var(--pad) * -1); padding-inline: var(--pad); scrollbar-width: none;
+  }
+  .why-grid::-webkit-scrollbar, .why-grid--3::-webkit-scrollbar { display: none; }
+  .why-grid .why, .why-grid--3 .why { flex: 0 0 100%; scroll-snap-align: center; }
+  .why-grid__dots { display: flex; }
+}
 
 /* ================= formules & groupes ================= */
 .formules { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem; }
@@ -359,6 +381,20 @@ section { padding-block: clamp(3.4rem, 8vw, 6.4rem); }
 /* used standalone below a .formules grid (not nested in a .formule card), needs more breathing room above it */
 .formule__actions--standalone { margin-top: 1.3rem; }
 @media (max-width: 860px) { .formules { grid-template-columns: 1fr; } }
+/* opt-in slider for the heavier 2-card .formules usages (full price + list + CTA per card) —
+   the short teaser cards linking out to tarifs.html/seminaires.html stay a plain stack, they're light already */
+.formules__dots { display: none; justify-content: center; gap: 0.4rem; margin-top: 1.3rem; }
+.formules__dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--line-strong); }
+.formules__dots span.is-active { background: var(--red-2); box-shadow: 0 0 8px rgba(225,6,0,0.8); }
+@media (max-width: 560px) {
+  .formules--slide {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 0;
+    margin-inline: calc(var(--pad) * -1); padding-inline: var(--pad); scrollbar-width: none;
+  }
+  .formules--slide::-webkit-scrollbar { display: none; }
+  .formules--slide > .formule { flex: 0 0 100%; scroll-snap-align: center; }
+  .formules__dots { display: flex; }
+}
 
 /* whole-card link variant — used for the "Tarifs" / "Séminaires" teaser cards that hand off
    to their own dedicated pages instead of holding the full content inline */
@@ -411,7 +447,19 @@ a.formule:hover .formule__more svg { transform: translateX(3px); }
 .pack p { font-size: 0.85rem; line-height: 1.5; color: var(--ink-mid); padding-top: 0.6rem; border-top: 1px solid var(--line); }
 .pay-methods { margin-top: 1.4rem; font-size: 0.85rem; color: var(--ink-dim); }
 @media (max-width: 900px) { .packs { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .packs { grid-template-columns: 1fr; } }
+/* 5 group formulas stacked full-width is a long scroll — swipe through them like the other card sets */
+.packs__dots { display: none; justify-content: center; gap: 0.4rem; margin-top: 1rem; }
+.packs__dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--line-strong); }
+.packs__dots span.is-active { background: var(--red-2); box-shadow: 0 0 8px rgba(225,6,0,0.8); }
+@media (max-width: 560px) {
+  .packs {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 0;
+    margin-inline: calc(var(--pad) * -1); padding-inline: var(--pad); scrollbar-width: none;
+  }
+  .packs::-webkit-scrollbar { display: none; }
+  .pack { flex: 0 0 100%; scroll-snap-align: center; }
+  .packs__dots { display: flex; }
+}
 
 /* ================= gallery ================= */
 .gallery { columns: 4 230px; column-gap: 1.1rem; }
@@ -541,3 +589,12 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); }
 .cs--map iframe { width: 100%; height: 100%; border: 0; filter: grayscale(0.35) invert(0.92) contrast(0.9); }
 @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; } }
 @media (max-width: 520px) { .cform__row { grid-template-columns: 1fr; } }
+
+/* ================= mobile: trim excess weight ================= */
+@media (max-width: 560px) {
+  /* every section's own top/bottom air adds up fast on a long one-pager — tighten it a bit */
+  section { padding-block: clamp(2.2rem, 9vw, 4.4rem); }
+  .head { margin-bottom: clamp(1.5rem, 4vw, 2.2rem); }
+  .why { padding: 1.3rem 1.25rem; }
+  .formule { padding: 1.5rem 1.4rem; }
+}
