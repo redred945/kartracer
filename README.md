@@ -40,10 +40,20 @@ Ajouté à `C:\Users\Reda\Code\.claude\launch.json` sous le nom `kartracer-stati
 - [ ] **Photos hautes résolution** — les photos ont été récupérées depuis le site actuel puis
       recompressées (JPEG, largeur max 1600 px) pour rester légères. Si le client a des photos sources
       en meilleure qualité (piste, karts, club house), les substituer dans `assets/img/`.
-- [ ] **Vidéo du hero** — `assets/video/hero-reel.mp4` (972 Ko, 360×640, ~17s) est une copie du reel
-      Facebook officiel du client (https://www.facebook.com/reel/1767576667619584, page "Kart Racer
-      Saran"), récupérée en 360p progressif (résolution native de la source, pas d'upscale). Si le
-      client a le fichier source en meilleure qualité, le substituer directement.
+- [ ] **Vidéos de la section "En images"** (juste après le hero, `assets/video/`) — deux reels
+      Facebook du client, en autoplay muet/boucle, sans lien de sortie :
+      - `hero-reel.mp4` (972 Ko, 360×640, ~17s) — copie de
+        https://www.facebook.com/reel/1767576667619584, récupérée en 360p progressif H264
+        (résolution native de la source, codec universellement compatible).
+      - `hero-reel-2.mp4` (7,9 Mo, 720p, ~47s) — copie de
+        https://www.facebook.com/reel/1187930886243673. ⚠️ Facebook n'a autorisé le téléchargement
+        direct que de cette variante **VP9** (même en repassant par un compte connecté) ; aucune
+        version H264 n'était accessible pour ce reel précis. VP9 fonctionne sur la plupart des
+        navigateurs récents (Chrome/Android/Safari 16+ sur puce récente), mais peut ne pas se lire
+        sur d'anciens iPhone. À surveiller après mise en ligne — si des visiteurs sur iPhone
+        signalent que cette 2e vidéo ne se lance pas (contrairement à la 1ère), il faudra demander
+        au client le fichier source de ce reel pour le réencoder proprement en H264.
+      Si le client a les fichiers source en meilleure qualité, les substituer directement.
 
 ## Structure
 

@@ -30,12 +30,14 @@
     fabIo.observe(footerEl);
   }
 
-  // reel band — autoplay the client's own muted footage, unless the visitor prefers reduced motion.
-  // Retries on 'canplay' too: calling play() before any data has buffered can otherwise get silently
-  // rejected on a cold load, leaving the clip stuck at frame 0 with no second attempt.
-  var reelVideo = document.querySelector('.reel-band__video video');
-  if (reelVideo) {
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  // reel band — autoplay the client's own muted footage (there can be more than one clip), unless
+  // the visitor prefers reduced motion. Retries on 'canplay' too: calling play() before any data
+  // has buffered can otherwise get silently rejected on a cold load, leaving the clip stuck at
+  // frame 0 with no second attempt — the HTML autoplay attribute is the main safety net for real
+  // mobile browsers, this is just a JS-side backup for whichever one of the two still needs it.
+  var reduceReels = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  Array.prototype.slice.call(document.querySelectorAll('.reel-band__video video')).forEach(function (reelVideo) {
+    if (reduceReels) {
       reelVideo.removeAttribute('loop');
       reelVideo.pause();
     } else {
@@ -43,7 +45,7 @@
       tryPlayReel();
       reelVideo.addEventListener('canplay', tryPlayReel);
     }
-  }
+  });
 
   // generic mobile slider: horizontal scroll-snap track with optional dot indicators and optional
   // auto-advance. Originally built just for .stats__grid; reused (without auto-advance) for any
@@ -100,9 +102,11 @@
 
   // stats strip: glanceable numbers, auto-advances on its own, pauses briefly if the visitor swipes it
   setupSlider(document.querySelector('.stats__grid'), { dotsSelector: '.stats__dots', auto: true });
-  // bento, why-grid, formules (heavy usages only) and packs: real content to read/compare,
-  // so these swipe on demand but never auto-advance
-  setupSlider(document.querySelector('.bento'), { dotsSelector: '.bento__dots' });
+  // bento has 9 cards — too many to expect someone to swipe through by hand, so it auto-advances
+  // too (slower than the stats strip, since there's real text to skim per card)
+  setupSlider(document.querySelector('.bento'), { dotsSelector: '.bento__dots', auto: true, interval: 4200 });
+  // why-grid, formules (heavy usages only) and packs: fewer cards, real content to read/compare,
+  // so these still swipe on demand only, no auto-advance
   Array.prototype.slice.call(document.querySelectorAll('.why-grid')).forEach(function (el) {
     setupSlider(el, { dotsSelector: '.why-grid__dots' });
   });
