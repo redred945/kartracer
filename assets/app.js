@@ -72,6 +72,62 @@
     window.addEventListener('resize', function () { stopStatsAuto(); startStatsAuto(); });
   }
 
+  // scrollspy — lights up the header nav link for the section currently in view.
+  // Only meaningful on the homepage, where a few nav links point to in-page anchors;
+  // on other pages every nav link points off-page so there is nothing to spy on.
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.bar__nav a[href^="#"]'));
+  if (navLinks.length && 'IntersectionObserver' in window) {
+    var spySections = navLinks
+      .map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); })
+      .filter(Boolean);
+    if (spySections.length) {
+      var setActiveNav = function (id) {
+        navLinks.forEach(function (a) { a.classList.toggle('is-active', a.getAttribute('href') === '#' + id); });
+      };
+      var spyIo = new IntersectionObserver(function (entries) {
+        var best = null;
+        entries.forEach(function (en) {
+          if (en.isIntersecting && (!best || en.intersectionRatio > best.intersectionRatio)) best = en;
+        });
+        if (best) setActiveNav(best.target.id);
+      }, { rootMargin: '-35% 0px -55% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] });
+      spySections.forEach(function (el) { spyIo.observe(el); });
+    }
+  }
+
+  // animated counters — numbers count up from 0 once their stat/badge scrolls into view.
+  // The final value is always the element's original text, so with reduced motion (or if
+  // IntersectionObserver is missing) the page already shows the right number and nothing else runs.
+  var counters = Array.prototype.slice.call(document.querySelectorAll('[data-count]'));
+  var reduceCounters = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (counters.length && !reduceCounters && 'IntersectionObserver' in window) {
+    var easeOutCubic = function (t) { return 1 - Math.pow(1 - t, 3); };
+    var formatCount = function (value, decimals) {
+      var s = value.toFixed(decimals);
+      return decimals > 0 ? s.replace('.', ',') : s;
+    };
+    var runCounter = function (el) {
+      var target = parseFloat(el.getAttribute('data-count'));
+      if (isNaN(target)) return;
+      var decimals = el.hasAttribute('data-decimals') ? parseInt(el.getAttribute('data-decimals'), 10) : 0;
+      var duration = 1300;
+      var start = null;
+      var step = function (ts) {
+        if (start === null) start = ts;
+        var p = Math.min(1, (ts - start) / duration);
+        el.textContent = formatCount(target * easeOutCubic(p), decimals);
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    var counterIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { runCounter(en.target); counterIo.unobserve(en.target); }
+      });
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.4 });
+    counters.forEach(function (el) { counterIo.observe(el); });
+  }
+
   // highlight today's row in the opening-hours table
   var hoursTable = document.getElementById('hoursTable');
   if (hoursTable) {

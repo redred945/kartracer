@@ -18,11 +18,19 @@ Ajouté à `C:\Users\Reda\Code\.claude\launch.json` sous le nom `kartracer-stati
 - [ ] **Clé Web3Forms** — dans `contact.html`, remplacer `VOTRE_CLE_WEB3FORMS` par la vraie clé d'accès
       (https://web3forms.com/). Tant qu'elle n'est pas renseignée, le formulaire retombe automatiquement
       sur un `mailto:` vers contact@kartracer.fr.
-- [ ] **Avis Google** — aucune note vérifiée n'était disponible au moment de la maquette. Le lien
-      "Voir nos avis Google" pointe vers une recherche Google Maps générique
-      (`https://www.google.com/maps/search/?api=1&query=Kart+Racer+Saran`).
-      Le remplacer par le lien officiel de la fiche Google Business une fois identifié, et envisager
-      d'afficher la note réelle si elle est bonne.
+- [x] **Avis Google** — note vérifiée le 2026-09-14 via une recherche Google (fiche "Kart Racer",
+      site web = kartracer.fr, confirmée) : **4,2/5 sur 879 avis**. Affichée dans le hero (`.hero__proof`)
+      et dans "Infos pratiques" (`.avis-link`), avec un lien vers
+      `https://www.google.com/maps/search/?api=1&query=Kart+Racer+Saran`. À remplacer par le lien direct
+      de la fiche Google Business si le client en a un, et à réactualiser périodiquement (la note/le
+      nombre d'avis évoluent).
+- [ ] **⚠️ Incohérence d'adresse à vérifier avec le client** — le site actuel indique "Parc de loisirs,
+      rue de la Tuilerie, 45770 Saran", mais la fiche Google trouvée lors de la recherche d'avis indique
+      "1 Rue de l'Orée de la Forêt, 45770 Saran" pour la même entreprise (même téléphone, même site web
+      kartracer.fr, avis Tripadvisor correspondants). Il est possible que la rue ait été renommée, que la
+      fiche Google soit obsolète, ou l'inverse. Le site reprend pour l'instant l'adresse du site actuel
+      (rue de la Tuilerie) partout (contenu + JSON-LD) — à confirmer avant mise en ligne, une adresse
+      incohérente entre le site et Google Maps nuit au référencement local.
 - [ ] **Mentions légales / SIRET** — le lien "Mentions légales" du footer pointe vers `#`. Le site
       actuel ne mentionne pas de numéro SIRET dans ses propres mentions légales ; à compléter avec la
       raison sociale, le SIRET, l'hébergeur (OVH selon le site actuel), etc.
@@ -35,13 +43,23 @@ Ajouté à `C:\Users\Reda\Code\.claude\launch.json` sous le nom `kartracer-stati
 
 ## Structure
 
+Hybride one-pager + pages dédiées : la home reste la meilleure vitrine (scroll, conversion), mais
+Tarifs et Séminaires — les deux intentions de recherche les plus "argent" et les plus distinctes
+(un particulier qui cherche un prix ≠ une entreprise qui cherche un séminaire) — sont sorties en
+vraies pages avec leur propre `<title>`/description/URL, pour ne pas perdre leur potentiel SEO propre
+comme sur l'ancien site multi-pages.
+
 - `index.html` — one-pager (hero, chiffres clés, bento complexe, pourquoi Kart Racer, formules
-  kart+laser/paintball, tarifs, séminaires, galerie, infos pratiques, FAQ, CTA final)
+  kart+laser/paintball, bannière de renvoi vers Tarifs/Séminaires, galerie, infos pratiques, FAQ, CTA final)
+- `tarifs.html` — page dédiée : tarifs pilote adulte/enfant, kart+laser/paintball, formules groupe
+- `seminaires.html` — page dédiée : séminaires d'entreprise (réunion, restauration, kart sur mesure)
 - `contact.html` — formulaire de contact + coordonnées + carte
 - `assets/style.css` — feuille de style unique (tokens, composants, responsive)
-- `assets/app.js` — header flottant au scroll, burger mobile, animations au scroll, carrousel stats
-  mobile, surlignage du jour en cours dans le tableau d'horaires, formulaire Web3Forms + fallback mailto
-- `assets/img/` — photos réelles du complexe (récupérées depuis kartracer.fr, recompressées pour le web)
+- `assets/app.js` — header flottant au scroll, burger mobile (morph en croix), scrollspy nav,
+  compteurs animés (stats + record du tour), animations au scroll, carrousel stats mobile, surlignage
+  du jour en cours dans le tableau d'horaires, formulaire Web3Forms + fallback mailto
+- `assets/img/` — photos réelles du complexe (récupérées depuis kartracer.fr, recompressées pour le web,
+  avec un léger étalonnage colorimétrique commun via `--photo-grade` pour une identité plus cohérente)
 
 ## Contenu repris du site actuel
 

@@ -40,6 +40,10 @@
   --radius-md: 16px;
   --radius-sm: 10px;
 
+  /* shared colour grade applied to every real photo (hero, bento, gallery) so mismatched
+     source photos read as one cohesive, art-directed set instead of raw stock images */
+  --photo-grade: grayscale(14%) saturate(1.12) contrast(1.07) brightness(0.96) sepia(4%);
+
   color-scheme: dark;
 }
 
@@ -143,6 +147,8 @@ header.bar.is-float .bar__badge { transform: scale(0.86); }
 .bar__nav { display: flex; gap: 1.5rem; transition: gap .5s cubic-bezier(.22,.61,.36,1); }
 .bar__nav a { font-size: 0.83rem; font-weight: 600; letter-spacing: 0.01em; text-decoration: none; color: var(--ink-mid); padding-block: 0.3rem; border-bottom: 2px solid transparent; transition: color .18s, border-color .18s, font-size .5s; }
 .bar__nav a:hover { color: var(--ink); border-color: var(--red); }
+/* scrollspy — the section currently in view (or the page you're actually on) lights up like a hover, but persistent */
+.bar__nav a.is-active, .bar__nav a[aria-current="page"] { color: var(--ink); border-color: var(--red); }
 
 .bar__tel { font-family: var(--ff-display); font-weight: 700; font-size: 1rem; text-decoration: none; color: var(--ink); white-space: nowrap; display: inline-flex; align-items: center; gap: 0.45em; }
 .bar__tel svg { width: 15px; height: 15px; fill: var(--red-2); }
@@ -177,7 +183,7 @@ header.bar.is-float .bar__badge { transform: scale(0.86); }
 /* ================= hero ================= */
 .hero { position: relative; overflow: hidden; }
 .hero__media { position: absolute; inset: 0; }
-.hero__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; }
+.hero__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; filter: var(--photo-grade); }
 .hero__media::after {
   content: ""; position: absolute; inset: 0;
   background:
@@ -205,6 +211,13 @@ header.bar.is-float .bar__badge { transform: scale(0.86); }
 }
 .hero__sub { color: var(--ink-mid); font-size: var(--fs-lead); max-width: 42ch; }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 0.85rem; margin-top: 0.3rem; }
+
+/* real, verified Google rating shown as a lightweight trust line under the hero CTAs */
+.hero__proof { display: inline-flex; align-items: center; gap: 0.6em; font-size: 0.84rem; color: var(--ink-mid); text-decoration: none; margin-top: 0.2rem; }
+.hero__proof:hover { color: var(--ink); }
+.hero__proof .stars { display: inline-flex; gap: 0.08em; color: var(--amber); flex: 0 0 auto; }
+.hero__proof .stars svg { width: 13px; height: 13px; fill: currentColor; }
+.hero__proof b { font-family: var(--ff-display); font-weight: 700; color: var(--ink); }
 
 .hero__badge {
   position: absolute; z-index: 1; right: 0; bottom: clamp(1.4rem, 4vw, 2.6rem);
@@ -276,7 +289,7 @@ section { padding-block: clamp(3.4rem, 8vw, 6.4rem); }
 }
 .bento__card:hover { transform: translateY(-5px); border-color: var(--line-strong); box-shadow: 0 26px 56px -24px rgba(225,6,0,0.42); }
 .bento__card.is-amber:hover { box-shadow: 0 26px 56px -24px rgba(245,197,24,0.4); }
-.bento__card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .7s cubic-bezier(.2,.7,.2,1); }
+.bento__card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: var(--photo-grade); transition: transform .7s cubic-bezier(.2,.7,.2,1); }
 .bento__card:hover img { transform: scale(1.07); }
 .bento__card::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(0deg, rgba(11,11,13,0.95) 0%, rgba(11,11,13,0.58) 40%, rgba(11,11,13,0.08) 68%); }
 .bento__num { position: absolute; top: 1rem; left: 1.15rem; z-index: 2; font-family: var(--ff-mono); font-size: 0.72rem; font-variant-numeric: tabular-nums; color: rgba(255,255,255,0.78); letter-spacing: 0.05em; text-shadow: 0 1px 8px rgba(0,0,0,0.85), 0 0 3px rgba(0,0,0,0.6); }
@@ -347,6 +360,15 @@ section { padding-block: clamp(3.4rem, 8vw, 6.4rem); }
 .formule__actions--standalone { margin-top: 1.3rem; }
 @media (max-width: 860px) { .formules { grid-template-columns: 1fr; } }
 
+/* whole-card link variant — used for the "Tarifs" / "Séminaires" teaser cards that hand off
+   to their own dedicated pages instead of holding the full content inline */
+a.formule { text-decoration: none; cursor: pointer; transition: transform .25s cubic-bezier(.2,.7,.2,1), border-color .25s ease; }
+a.formule:hover { transform: translateY(-4px); border-color: var(--line-strong); }
+.formule__more { display: inline-flex; align-items: center; gap: 0.45em; font-size: 0.86rem; font-weight: 700; color: var(--red-2); margin-top: 0.2rem; }
+.formule--b .formule__more { color: var(--amber-2); }
+.formule__more svg { width: 14px; height: 14px; transition: transform .25s ease; }
+a.formule:hover .formule__more svg { transform: translateX(3px); }
+
 /* ================= tarifs ================= */
 .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem; margin-bottom: 1.4rem; }
 .price-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(1.6rem, 3vw, 2.2rem); }
@@ -366,6 +388,7 @@ section { padding-block: clamp(3.4rem, 8vw, 6.4rem); }
 .price-note { margin-top: 1rem; font-size: 0.84rem; line-height: 1.5; color: var(--ink-mid); background: rgba(245,197,24,0.08); border: 1px solid rgba(245,197,24,0.24); border-radius: var(--radius-sm); padding: 0.8rem 1rem; }
 /* EVG/EVJF callout banner below the two price cards — same note style, laid out as a tag + copy row */
 .price-note--evg { margin-top: 1.3rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.6rem 1.2rem; }
+.price-note--evg + .price-note--evg { margin-top: 0.7rem; }
 .price-note__tag { color: var(--ink); font-family: var(--ff-display); font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; text-transform: uppercase; }
 @media (max-width: 900px) { .price-grid { grid-template-columns: 1fr; } }
 
@@ -393,7 +416,7 @@ section { padding-block: clamp(3.4rem, 8vw, 6.4rem); }
 /* ================= gallery ================= */
 .gallery { columns: 4 230px; column-gap: 1.1rem; }
 .gallery figure { margin: 0 0 1.1rem; break-inside: avoid; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--line); position: relative; }
-.gallery img { width: 100%; display: block; transition: transform .5s ease; }
+.gallery img { width: 100%; display: block; filter: var(--photo-grade); transition: transform .5s ease; }
 .gallery figure:hover img { transform: scale(1.04); }
 .gallery figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 0.7rem 0.9rem 0.8rem; font-size: 0.76rem; color: var(--ink-mid); background: linear-gradient(0deg, rgba(11,11,13,0.9), transparent); opacity: 0; transition: opacity .25s ease; }
 .gallery figure:hover figcaption { opacity: 1; }
@@ -426,8 +449,12 @@ section { padding-block: clamp(3.4rem, 8vw, 6.4rem); }
 .addr-list .k { display: block; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-dim); margin-bottom: 0.2rem; }
 .addr-list .v { font-family: var(--ff-display); font-weight: 600; font-size: 1.02rem; text-decoration: none; color: var(--ink); }
 .addr-list a.v:hover { color: var(--red-2); }
-.avis-link { display: inline-flex; align-items: center; gap: 0.5em; margin-top: 1.2rem; font-size: 0.88rem; font-weight: 600; color: var(--ink-mid); text-decoration: none; border-bottom: 1px solid var(--line-strong); padding-bottom: 0.15rem; }
+.avis-link { display: inline-flex; align-items: center; gap: 0.6em; margin-top: 1.2rem; font-size: 0.88rem; font-weight: 600; color: var(--ink-mid); text-decoration: none; border-bottom: 1px solid var(--line-strong); padding-bottom: 0.15rem; }
 .avis-link:hover { color: var(--ink); border-color: var(--red-2); }
+/* real, verified Google rating — stars + score read first, review count and the link text follow */
+.avis-link__stars { display: inline-flex; gap: 0.1em; color: var(--amber); }
+.avis-link__stars svg { width: 13px; height: 13px; fill: currentColor; }
+.avis-link__score { font-family: var(--ff-display); font-weight: 700; color: var(--ink); }
 @media (max-width: 900px) { .infos-grid { grid-template-columns: 1fr; } }
 
 /* ================= faq ================= */
